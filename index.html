@@ -126,6 +126,24 @@
              text-decoration: underline;
         }
 
+        /* 説明テキスト */
+        .info-texttop {
+            font-size: 19px;
+            color: #7d736b;
+            line-height: 1.6;
+            text-align: center;
+            background-color: transparent;
+            padding: 5px;
+            border: none;
+            margin-bottom: 15px;
+            top: 0;
+        }
+        
+        .info-texttop a {
+             color: #b39779;
+             text-decoration: underline;
+        }
+
         /* =========================================
            入力フォーム・ボタン類
            ========================================= */
@@ -550,8 +568,8 @@
 <body>
 
     <div class="container">
-        <h1>恵み助産院<br>予約フォーム</h1>
-        <div class="info-text">
+        <h1>予約フォーム</h1>
+        <div class="info-texttop">
             出張の方はこちら　
             <a href="tel:09030506904">電話：090-3050-6904</a>
         </div>
@@ -720,7 +738,7 @@
             'ママパパ教室（120分）': 150,
             '妊婦整体（60分）': 90,
             '産後整体（60分）': 90,
-            '日帰り（1日）': 420,
+            '日帰り（1日）': 20,
             '初診（120分）': 150,
             '再診（90分）': 120
         };
@@ -1288,12 +1306,12 @@ ${formData.dates[0]}
             }
         }
 
-        function updateCalendar(availability, businessDays) {
+function updateCalendar(availability, businessDays) {
             const calendar = document.getElementById('calendar1');
             const table = calendar.querySelector('table tbody');
 
             const times = [
-                '09:30', '10:00', '10:30', '11:00', '11:30',
+                '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
                 '12:00', '12:30', '13:00', '13:30',
                 '14:00', '14:30', '15:00', '15:30',
                 '16:00'
@@ -1331,6 +1349,9 @@ ${formData.dates[0]}
             // 現在の日時を取得
             const now = new Date();
 
+            // ▼追加：日帰り（1日）が選択されているかチェック
+            const isDayTripSelected = selectedSymptom && selectedSymptom.some(item => item.name === '日帰り（1日）');
+
             // テーブルの内容を更新
             for (let i = 0; i < 7; i++) {
                 const day = new Date(currentDate);
@@ -1351,6 +1372,29 @@ ${formData.dates[0]}
 
                     const slotStart = new Date(day);
                     slotStart.setHours(parseInt(times[j].split(':')[0]), parseInt(times[j].split(':')[1]), 0, 0);
+
+                    // ▼追加：日帰り（1日）の制限ロジック -----------------------
+                    if (isDayTripSelected) {
+                        const hour = slotStart.getHours();
+                        const minute = slotStart.getMinutes();
+
+                        // 条件1: 09:00 ~ 09:59 を✕にする (9時台すべて)
+                        if (hour === 9) {
+                            cell.textContent = '✕';
+                            cell.classList.add('unavailable');
+                            continue; // 次のループへ（このセルは処理終了）
+                        }
+
+                        // 条件2: 10:30以降 を✕にする
+                        // (10時台かつ30分以上、または11時以降)
+                        if ((hour === 10 && minute >= 30) || hour >= 11) {
+                            cell.textContent = '✕';
+                            cell.classList.add('unavailable');
+                            continue; // 次のループへ（このセルは処理終了）
+                        }
+                    }
+                    // ▲追加終了 ----------------------------------------------
+
 
                     let slotEnd = new Date(slotStart);
                     let menuDuration = selectedMenuTime || 10;
@@ -1429,7 +1473,7 @@ ${formData.dates[0]}
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
                     } else if (slotStart.getDay() === 6 && !isBusinessDay && businessEventTimes.length === 0) {
-                        // 日曜日で、営業日でない場合は ✕
+                        // 土曜日で、営業日でない場合は ✕
                         cell.textContent = '✕';
                         cell.classList.add('unavailable');
                     } else if (isBusinessDay && !overLimit) {
@@ -1590,6 +1634,3 @@ ${formData.dates[0]}
 </body>
 
 </html>
-
-
-
