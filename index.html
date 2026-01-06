@@ -437,7 +437,7 @@
             box-shadow: 0 6px 20px rgba(166, 140, 118, 0.5);
         }
 
-        .submit-button:disabled {
+.submit-button:disabled {
             background: #ccc; /* グレーにする */
             cursor: not-allowed; /* 禁止マークのカーソル */
             transform: none; /* 動きを止める */
@@ -1243,23 +1243,15 @@
             updateDisplayInfo();
         }
 
-// ★追加：送信中かどうかを管理するフラグ
-        let isSubmitting = false;
-
         function submitForm() {
-            // ★追加：すでに送信処理中なら何もしない
-            if (isSubmitting) {
-                return;
-            }
-
             const formData = {
                 name: document.getElementById('name').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
                 visitCount: visitCount,
                 selectedMenu: selectedMenu,
-                selectedSymptom: selectedSymptom && selectedSymptom.length > 0 ? selectedSymptom : null,
+                selectedSymptom: selectedSymptom && selectedSymptom.length > 0 ? selectedSymptom : null, // 空の選択肢をチェック
                 irradiationsCount: irradiationsCount,
-                dates: selectedFullDate ? [selectedFullDate] : null,
+                dates: selectedFullDate ? [selectedFullDate] : null, // 空チェック
                 message: document.getElementById('message').value.trim()
             };
 
@@ -1284,29 +1276,19 @@
                 return;
             }
 
-            // ★追加：ここから送信処理開始（ロックをかける）
-            isSubmitting = true;
-            
-            // ボタンを特定して無効化（見た目の変更）
-            const submitBtn = document.querySelector('.submit-button');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = '送信中...';
-            }
-
             // selectedSymptomを文字列に整形
             const selectedSymptomText = formData.selectedSymptom
                 ? formData.selectedSymptom.map(item => `${item.name}`).join(',')
                 : 'メニュー未選択';
 
-            // irradiationsCount がある場合のみテキストを作る
-            const irradiationsText = formData.irradiationsCount
-                ? `,${formData.irradiationsCount}`
-                : '';
+// irradiationsCount がある場合のみテキストを作る
+const irradiationsText = formData.irradiationsCount
+    ? `,${formData.irradiationsCount}`
+    : '';
 
-            liff.sendMessages([{
-                type: 'text',
-                text: `【予約フォーム】
+liff.sendMessages([{
+    type: 'text',
+    text: `【予約フォーム】
 お名前：${formData.name}
 電話番号：${formData.phone}
 ご来店回数：${formData.visitCount}
@@ -1315,7 +1297,7 @@
 希望日時：
 ${formData.dates[0]}
 メッセージ：${formData.message}`
-            }]).then(() => {
+}]).then(() => {
                 /* メッセージ送信成功時の処理 */
                 alert('当日キャンセルは無いようにお願いいたします。');
                 /* LIFFウィンドウを閉じる */
@@ -1323,14 +1305,6 @@ ${formData.dates[0]}
             }).catch((err) => {
                 /* メッセージ送信失敗時の処理 */
                 console.error('メッセージの送信に失敗しました', err);
-                alert('送信に失敗しました。通信環境を確認して再度お試しください。');
-                
-                // ★追加：失敗した場合はロックを解除して再送できるようにする
-                isSubmitting = false;
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '予約を行う';
-                }
             });
         }
 
