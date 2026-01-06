@@ -1243,52 +1243,69 @@
             updateDisplayInfo();
         }
 
-        function submitForm() {
-            const formData = {
-                name: document.getElementById('name').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                visitCount: visitCount,
-                selectedMenu: selectedMenu,
-                selectedSymptom: selectedSymptom && selectedSymptom.length > 0 ? selectedSymptom : null, // 空の選択肢をチェック
-                irradiationsCount: irradiationsCount,
-                dates: selectedFullDate ? [selectedFullDate] : null, // 空チェック
-                message: document.getElementById('message').value.trim()
-            };
+// ▼追加：送信中かどうかを判定するフラグ
+    let isSubmitting = false; 
 
-            // フォームデータのチェック
-            if (!formData.name) {
-                alert('お名前を入力してください。');
-                return;
-            }
+    function submitForm() {
+        // ▼追加：すでに送信処理中なら何もしない（連打防止）
+        if (isSubmitting) {
+            return;
+        }
 
-            if (!formData.phone) {
-                alert('電話番号を入力してください。');
-                return;
-            }
+        const formData = {
+            name: document.getElementById('name').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            visitCount: visitCount,
+            selectedMenu: selectedMenu,
+            selectedSymptom: selectedSymptom && selectedSymptom.length > 0 ? selectedSymptom : null,
+            irradiationsCount: irradiationsCount,
+            dates: selectedFullDate ? [selectedFullDate] : null,
+            message: document.getElementById('message').value.trim()
+        };
 
-            if (!formData.selectedSymptom) {
-                alert('メニューを選択してください。');
-                return;
-            }
+        // フォームデータのチェック
+        if (!formData.name) {
+            alert('お名前を入力してください。');
+            return;
+        }
 
-            if (!formData.dates) {
-                alert('希望日時を選択してください。');
-                return;
-            }
+        if (!formData.phone) {
+            alert('電話番号を入力してください。');
+            return;
+        }
 
-            // selectedSymptomを文字列に整形
-            const selectedSymptomText = formData.selectedSymptom
-                ? formData.selectedSymptom.map(item => `${item.name}`).join(',')
-                : 'メニュー未選択';
+        if (!formData.selectedSymptom) {
+            alert('メニューを選択してください。');
+            return;
+        }
 
-// irradiationsCount がある場合のみテキストを作る
-const irradiationsText = formData.irradiationsCount
-    ? `,${formData.irradiationsCount}`
-    : '';
+        if (!formData.dates) {
+            alert('希望日時を選択してください。');
+            return;
+        }
 
-liff.sendMessages([{
-    type: 'text',
-    text: `【予約フォーム】
+        // ▼追加：送信フラグをONにし、ボタンの見た目を変更して押せないようにする
+        isSubmitting = true;
+        const submitBtn = document.querySelector('.submit-button');
+        const originalBtnText = submitBtn.innerText; // 元のテキスト（予約を行う）を保存
+        submitBtn.disabled = true; // ボタンを無効化
+        submitBtn.innerText = "送信中..."; // テキスト変更
+        submitBtn.style.backgroundColor = "#ccc"; // 色をグレーにして分かりやすく（任意）
+        submitBtn.style.cursor = "not-allowed";
+
+        // selectedSymptomを文字列に整形
+        const selectedSymptomText = formData.selectedSymptom
+            ? formData.selectedSymptom.map(item => `${item.name}`).join(',')
+            : 'メニュー未選択';
+
+        // irradiationsCount がある場合のみテキストを作る
+        const irradiationsText = formData.irradiationsCount
+            ? `,${formData.irradiationsCount}`
+            : '';
+
+        liff.sendMessages([{
+            type: 'text',
+            text: `【予約フォーム】
 お名前：${formData.name}
 電話番号：${formData.phone}
 ご来店回数：${formData.visitCount}
@@ -1297,16 +1314,27 @@ liff.sendMessages([{
 希望日時：
 ${formData.dates[0]}
 メッセージ：${formData.message}`
-}]).then(() => {
-                /* メッセージ送信成功時の処理 */
-                alert('当日キャンセルは無いようにお願いいたします。');
-                /* LIFFウィンドウを閉じる */
-                liff.closeWindow();
-            }).catch((err) => {
-                /* メッセージ送信失敗時の処理 */
-                console.error('メッセージの送信に失敗しました', err);
-            });
-        }
+        }]).then(() => {
+            /* メッセージ送信成功時の処理 */
+            alert('当日キャンセルは無いようにお願いいたします。');
+            /* LIFFウィンドウを閉じる */
+            liff.closeWindow();
+            
+            // 成功時はウィンドウが閉じるので、フラグを戻す必要はありませんが、
+            // 万が一閉じなかった場合のために戻さないでおきます（二重予約防止優先）
+        }).catch((err) => {
+            /* メッセージ送信失敗時の処理 */
+            console.error('メッセージの送信に失敗しました', err);
+            alert('送信に失敗しました。もう一度お試しください。');
+
+            // ▼追加：失敗した場合は再送できるようにボタンを元に戻す
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalBtnText;
+            submitBtn.style.backgroundColor = ""; // 色を戻す
+            submitBtn.style.cursor = "pointer";
+        });
+    }
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
