@@ -564,8 +564,8 @@
 
         <div class="label">ご来店回数<span class="required">必須</span></div>
         <div class="visit-buttons">
-            <button type="button" id="firstVisit" onclick="selectVisit(this)">1回目〈30分〉</button>
-            <button type="button" id="repeatVisit" onclick="selectVisit(this)">2回目以降〈0分〉</button>
+            <button type="button" id="firstVisit" onclick="selectVisit(this)">1回目</button>
+            <button type="button" id="repeatVisit" onclick="selectVisit(this)">2回目以降</button>
         </div>
 
         <div class="label" id="course">メニューをお選びください<span class="required">必須</span></div>
@@ -1260,7 +1260,7 @@ ${formData.dates[0]}
                 return;
             }
 
-            const url = 'https://script.google.com/macros/s/AKfycbxBUq3Ti6dmyZO1aO3yhad476AIl6nR5IWTUdeMswDBgrBu-GOhNNRaHVziVeyjb-rd/exec' +
+            const url = 'https://script.google.com/macros/s/AKfycbxfbl6VkQyGJepK3FrOt0i4iji0Jq88qLqADr03B4NTLX-5GqJknvwidUW55T1yYWnY/exec' +
                 `?startTime=${startTime.toISOString()}&endTime=${endTime.toISOString()}`;
 
             try {
@@ -1590,3 +1590,4 @@ ${formData.dates[0]}
 </body>
 
 </html>
+
