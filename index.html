@@ -128,7 +128,7 @@
 
         /* 説明テキスト */
         .info-texttop {
-            font-size: 19px;
+            font-size: 21px;
             color: #7d736b;
             line-height: 1.6;
             text-align: center;
@@ -175,7 +175,8 @@
         .visit-buttons,
         .symptoms,
         .menu-sections,
-        .irradiations {
+        .irradiations,
+        .daytrip-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
@@ -186,7 +187,8 @@
         .visit-buttons button,
         .symptoms button,
         .menu-sections button,
-        .irradiations button {
+        .irradiations button,
+        .daytrip-buttons button {
             flex: 1 1 45%; /* スマホで2列になりやすい幅 */
             padding: 12px 10px;
             border: 1px solid #dccdc2;
@@ -204,7 +206,8 @@
         .visit-buttons button:hover,
         .symptoms button:hover,
         .menu-sections button:hover,
-        .irradiations button:hover {
+        .irradiations button:hover,
+        .daytrip-buttons button:hover {
             background-color: #f9f5f2;
             transform: translateY(-2px);
         }
@@ -213,7 +216,8 @@
         .visit-buttons button.active,
         .symptoms button.active,
         .menu-sections button.active,
-        .irradiations button.active {
+        .irradiations button.active,
+        .daytrip-buttons button.active {
             background-color: #b39779; /* メインカラー */
             color: #ffffff;
             border-color: #b39779;
@@ -676,7 +680,7 @@
 
         <div id="whitening" class="menu-section">
             <div class="labeltyuuou">
-                <span class="highlight-text">◆産後ケア◆<br>（河内長野・富田林へ申請済みの方のみ）</span>
+                <span class="highlight-text">◆産後ケア◆<br>（河内長野・富田林へ申請済みの方のみ）<br>2回目以降の方で宿泊希望の方は<br>別途お問い合わせください</span>
             </div>
             <div class="info-text">▼メニューをお選びください▼</div>
             <div class="symptoms">
@@ -695,6 +699,35 @@
             </div>
         </div>
 
+        <div id="dayTripOptions" style="display: none; background-color: #fffaf5; padding: 15px; border-radius: 8px; border: 1px dashed #b39779; margin-top: 20px;">
+            <div style="text-align: center; font-weight: bold; color: #b39779; margin-bottom: 10px;">◆日帰り（1日）詳細入力◆</div>
+            
+            <div class="label" style="margin-top: 10px;">主なご利用希望</div>
+            <div class="daytrip-buttons" id="dayTripPurposeButtons">
+                <button type="button" onclick="selectDayTripPurpose(this)">授乳相談</button>
+                <button type="button" onclick="selectDayTripPurpose(this)">乳房ケア</button>
+                <button type="button" onclick="selectDayTripPurpose(this)">育児相談</button>
+                <button type="button" onclick="selectDayTripPurpose(this)">気分転換</button>
+                <button type="button" onclick="selectDayTripPurpose(this)">その他</button>
+            </div>
+
+            <div class="label">昼食、夕食の希望の有無</div>
+            <div class="daytrip-buttons" id="dayTripMealButtons">
+                <button type="button" onclick="selectMealType(this, 'lunch')">昼食のみ</button>
+                <button type="button" onclick="selectMealType(this, 'both')">昼食、夕食</button>
+            </div>
+
+            <div id="lunchTimeContainer" style="display: none;">
+                <div class="label">昼食のみのご利用の方は何時までご利用希望ですか？</div>
+                <input type="text" id="dayTripEndTime" placeholder="例：15:00まで">
+            </div>
+
+            <div class="label">アレルギーはありますか？<br><span style="font-size: 14px; font-weight: normal;">（ある方は詳細をご記入ください）</span></div>
+            <input type="text" id="dayTripAllergy" placeholder="なし、または詳細（卵、そば 等）">
+
+            <div class="label">嗜好で食べられないものの有無</div>
+            <input type="text" id="dayTripDislike" placeholder="なし、または詳細（パクチー、辛いもの 等）">
+        </div>
         <div class="label">希望日時<span class="required">必須</span></div>
         <div class="calendar-container">
             <div class="current-month-container">
@@ -754,6 +787,10 @@
         let irradiationsCount = ''; let totalAmount = 0; // 合計金額を格納する変数
         let menuPrice = 0; // メニューの価格
         let optionsPrice = 0; // オプションの合計価格
+
+        // ▼ 追加変数：日帰り用
+        let dayTripPurpose = '';
+        let dayTripMeal = '';
 
         document.addEventListener('DOMContentLoaded', function () {
             liff.init({
@@ -919,6 +956,50 @@
             });
         });
 
+        // ▼▼▼ 日帰り機能追加ロジック ▼▼▼
+        function checkDayTripVisibility() {
+            const container = document.getElementById('dayTripOptions');
+            // 選択中のメニューに「日帰り（1日）」が含まれているか確認
+            const isDayTrip = selectedSymptom.some(item => item.name === '日帰り（1日）');
+            
+            if (isDayTrip) {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                // 非表示時は入力値をリセットする場合（任意）
+                // resetDayTripInputs();
+            }
+        }
+
+        function selectDayTripPurpose(button) {
+            // 他のボタンのactiveを解除（単一選択の場合）
+            const buttons = document.getElementById('dayTripPurposeButtons').querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            button.classList.add('active');
+            dayTripPurpose = button.textContent;
+        }
+
+        function selectMealType(button, type) {
+            // 他のボタンのactiveを解除
+            const buttons = document.getElementById('dayTripMealButtons').querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            button.classList.add('active');
+            dayTripMeal = button.textContent;
+
+            // 昼食のみの場合、時間入力表示
+            const timeContainer = document.getElementById('lunchTimeContainer');
+            if (type === 'lunch') {
+                timeContainer.style.display = 'block';
+            } else {
+                timeContainer.style.display = 'none';
+                document.getElementById('dayTripEndTime').value = ''; // 値をクリア
+            }
+        }
+        // ▲▲▲ 日帰り機能追加ロジック終了 ▲▲▲
+
+
         function selectSymptom(button, treatmentId) {
             // 選択された日時をリセット
             selectedFullDate = '';
@@ -953,6 +1034,8 @@
                 selectedMenusDisplay.style.display = 'none';
                 selectedMenusDisplay.innerHTML = '';
                 if (selectedMenuNameDiv) selectedMenuNameDiv.style.display = 'none';
+                
+                checkDayTripVisibility(); // 日帰りチェック実行
                 return;
             }
 
@@ -964,6 +1047,8 @@
                 selectedMenuTime += menuTimes[selectedMenuName] || 0;
                 menuPrice += parseInt(btn.getAttribute('data-price'), 10) || 0;
             });
+            
+            checkDayTripVisibility(); // 日帰りチェック実行
 
             // カレンダー更新
             if (typeof fetchAvailability === 'function') {
@@ -1066,6 +1151,8 @@
                 );
                 if (btn) menuPrice += parseInt(btn.getAttribute('data-price') || '0', 10);
             });
+            
+            checkDayTripVisibility(); // 日帰りチェック実行
 
             // 5) カレンダー再取得
             if (typeof fetchAvailability === 'function') {
@@ -1213,6 +1300,16 @@
             menuPrice = 0;             // メニューの価格リセット
             optionsPrice = 0;          // オプションの価格リセット
             totalAmount = 0;           // 合計金額リセット
+            
+            // 日帰りリセット
+            dayTripPurpose = '';
+            dayTripMeal = '';
+            document.getElementById('dayTripEndTime').value = '';
+            document.getElementById('dayTripAllergy').value = '';
+            document.getElementById('dayTripDislike').value = '';
+            // ボタンのアクティブ解除
+            document.querySelectorAll('#dayTripPurposeButtons button, #dayTripMealButtons button').forEach(btn => btn.classList.remove('active'));
+            checkDayTripVisibility();
 
             // 表示を更新
             updateDisplayInfo();
@@ -1252,6 +1349,11 @@
             return;
         }
 
+        // ▼追加：日帰り情報収集
+        const dayTripEndTime = document.getElementById('dayTripEndTime').value.trim();
+        const dayTripAllergy = document.getElementById('dayTripAllergy').value.trim();
+        const dayTripDislike = document.getElementById('dayTripDislike').value.trim();
+
         const formData = {
             name: document.getElementById('name').value.trim(),
             phone: document.getElementById('phone').value.trim(),
@@ -1260,7 +1362,13 @@
             selectedSymptom: selectedSymptom && selectedSymptom.length > 0 ? selectedSymptom : null,
             irradiationsCount: irradiationsCount,
             dates: selectedFullDate ? [selectedFullDate] : null,
-            message: document.getElementById('message').value.trim()
+            message: document.getElementById('message').value.trim(),
+            // 日帰り項目
+            dayTripPurpose: dayTripPurpose,
+            dayTripMeal: dayTripMeal,
+            dayTripEndTime: dayTripEndTime,
+            dayTripAllergy: dayTripAllergy,
+            dayTripDislike: dayTripDislike
         };
 
         // フォームデータのチェック
@@ -1303,6 +1411,20 @@
             ? `,${formData.irradiationsCount}`
             : '';
 
+        // ▼追加：日帰り用のテキスト生成
+        let dayTripInfoText = '';
+        // 「日帰り（1日）」が含まれている場合のみテキストを追加
+        if (formData.selectedSymptom && formData.selectedSymptom.some(item => item.name === '日帰り（1日）')) {
+            dayTripInfoText = `
+--------------------------------
+【日帰り詳細】
+ご利用希望：${formData.dayTripPurpose || '未選択'}
+食事希望：${formData.dayTripMeal || '未選択'}
+${formData.dayTripMeal === '昼食のみ' ? `利用終了時間：${formData.dayTripEndTime || '未入力'}\n` : ''}アレルギー：${formData.dayTripAllergy || 'なし'}
+苦手なもの：${formData.dayTripDislike || 'なし'}
+--------------------------------`;
+        }
+
         liff.sendMessages([{
             type: 'text',
             text: `【予約フォーム】
@@ -1310,7 +1432,7 @@
 電話番号：${formData.phone}
 ご来店回数：${formData.visitCount}
 コース：${formData.selectedMenu}
-メニュー：${selectedSymptomText}${irradiationsText}
+メニュー：${selectedSymptomText}${irradiationsText}${dayTripInfoText}
 希望日時：
 ${formData.dates[0]}
 メッセージ：${formData.message}`
