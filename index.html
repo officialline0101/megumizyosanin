@@ -719,14 +719,24 @@
             <div class="labeltyuuou">
                 <span class="highlight-text">◆妊婦さん向け◆</span>
             </div>
-            <div class="info-text">▼メニューをお選びください▼</div>
-            <div class="symptoms">
+            <div class="info-text" id="male-info-text">▼メニューをお選びください▼</div>
+            <!-- 初診メニュー（1回目） -->
+            <div class="symptoms male-first" style="display: none;">
                 <button type="button" onclick="selectSymptom(this)" data-category="妊婦さん向け"
-                    data-price="0">妊婦健診（90分）</button>
+                    data-price="7000">初診・妊婦健診（90分）：7,000円</button>
                 <button type="button" onclick="selectSymptom(this)" data-category="妊婦さん向け"
-                    data-price="0">妊婦相談（90分）</button>
+                    data-price="7000">初診・妊婦相談（90分）：7,000円</button>
                 <button type="button" onclick="selectSymptom(this)" data-category="妊婦さん向け"
-                    data-price="0">ママパパ教室（120分）</button>
+                    data-price="7000">初回・ママパパ教室（120分）：7,000円</button>
+            </div>
+            <!-- 再診メニュー（2回目以降） -->
+            <div class="symptoms male-repeat" style="display: none;">
+                <button type="button" onclick="selectSymptom(this)" data-category="妊婦さん向け"
+                    data-price="6000">再診・妊婦健診（90分）：6,000円</button>
+                <button type="button" onclick="selectSymptom(this)" data-category="妊婦さん向け"
+                    data-price="6000">再診・妊婦相談（90分）：6,000円</button>
+                <button type="button" onclick="selectSymptom(this)" data-category="妊婦さん向け"
+                    data-price="6000">2回目以降・ママパパ教室（120分）：6,000円</button>
             </div>
         </div>
 
@@ -734,12 +744,20 @@
             <div class="labeltyuuou">
                 <span class="highlight-text">◆骨盤軸整体（産前・産後）◆</span>
             </div>
-            <div class="info-text">▼メニューをお選びください▼</div>
-            <div class="symptoms">
+            <div class="info-text" id="female-info-text">▼メニューをお選びください▼</div>
+            <!-- 初診メニュー（1回目） -->
+            <div class="symptoms female-first" style="display: none;">
                 <button type="button" onclick="selectSymptom(this)" data-category="骨盤軸整体（産前・産後）"
-                    data-price="0">妊婦整体（60分）</button>
+                    data-price="8000">初診・妊婦整体（60分）：8,000円</button>
                 <button type="button" onclick="selectSymptom(this)" data-category="骨盤軸整体（産前・産後）"
-                    data-price="0">産後整体（60分）</button>
+                    data-price="8000">初診・産後整体（60分）：8,000円</button>
+            </div>
+            <!-- 再診メニュー（2回目以降） -->
+            <div class="symptoms female-repeat" style="display: none;">
+                <button type="button" onclick="selectSymptom(this)" data-category="骨盤軸整体（産前・産後）"
+                    data-price="7000">再診・妊婦整体（60分）：7,000円</button>
+                <button type="button" onclick="selectSymptom(this)" data-category="骨盤軸整体（産前・産後）"
+                    data-price="7000">再診・産後整体（60分）：7,000円</button>
             </div>
         </div>
 
@@ -763,15 +781,15 @@
             <div class="info-text">▼メニューをお選びください▼</div>
             <div class="symptoms">
                 <button type="button" onclick="selectSymptom(this)" data-category="授乳相談・おっぱいケア"
-                    data-price="0">初診（120分）</button>
+                    data-price="6000">初診（約90分）：6,000円</button>
                 <button type="button" onclick="selectSymptom(this)" data-category="授乳相談・おっぱいケア"
-                    data-price="0">再診（90分）</button>
+                    data-price="5000">再診（約60分）：5,000円</button>
             </div>
         </div>
 
         <div id="dayTripOptions"
             style="display: none; background-color: #fffaf5; padding: 15px; border-radius: 8px; border: 1px dashed #b39779; margin-top: 20px;">
-            <div style="text-align: center; font-weight: bold; color: #b39779; margin-bottom: 10px;">◆日帰り（1日）詳細入力◆</div>
+            <div style="text-align: center; font-weight: bold; color: #b39779; margin-bottom: 10px;">◆産後ケア 詳細入力◆</div>
 
             <div class="label" style="margin-top: 10px;">主なご利用希望</div>
             <div class="daytrip-buttons" id="dayTripPurposeButtons">
@@ -893,15 +911,26 @@
         let selectedirradiationsTime = 0; // 訪問回数で選択された時間
 
         let menuTimes = {
-            '妊婦健診（90分）': 120,
-            '妊婦相談（90分）': 120,
-            'ママパパ教室（120分）': 150,
-            '妊婦整体（60分）': 90,
-            '産後整体（60分）': 90,
+            // 妊婦さん向け（初診）
+            '初診・妊婦健診（90分）：7,000円': 120,
+            '初診・妊婦相談（90分）：7,000円': 120,
+            '初回・ママパパ教室（120分）：7,000円': 150,
+            // 妊婦さん向け（再診）
+            '再診・妊婦健診（90分）：6,000円': 120,
+            '再診・妊婦相談（90分）：6,000円': 120,
+            '2回目以降・ママパパ教室（120分）：6,000円': 150,
+            // 骨盤軸整体（初診）
+            '初診・妊婦整体（60分）：8,000円': 90,
+            '初診・産後整体（60分）：8,000円': 90,
+            // 骨盤軸整体（再診）
+            '再診・妊婦整体（60分）：7,000円': 90,
+            '再診・産後整体（60分）：7,000円': 90,
+            // 産後ケア
             '日帰り（1日）': 20,
-            '初診（120分）': 150,
-            '再診（90分）': 120,
-            '宿泊（１泊）': 20
+            '宿泊（１泊）': 20,
+            // 授乳相談・おっぱいケア
+            '初診（約90分）：6,000円': 120,
+            '再診（約60分）：5,000円': 90
         };
 
 
@@ -1033,15 +1062,13 @@
         // ▼▼▼ 日帰り機能追加ロジック ▼▼▼
         function checkDayTripVisibility() {
             const container = document.getElementById('dayTripOptions');
-            // 選択中のメニューに「日帰り（1日）」が含まれているか確認
-            const isDayTrip = selectedSymptom.some(item => item.name === '日帰り（1日）');
+            // 選択中のメニューに「日帰り（1日）」または「宿泊（１泊）」が含まれているか確認
+            const isDayTripOrStay = selectedSymptom.some(item => item.name === '日帰り（1日）' || item.name === '宿泊（１泊）');
 
-            if (isDayTrip) {
+            if (isDayTripOrStay) {
                 container.style.display = 'block';
             } else {
                 container.style.display = 'none';
-                // 非表示時は入力値をリセットする場合（任意）
-                // resetDayTripInputs();
             }
         }
 
@@ -1346,9 +1373,6 @@
                 }
                 if (stayBtn) {
                     stayBtn.style.display = 'none';
-                    // ボタン非表示時に選択状態を解除するかは仕様次第だが、
-                    // ユーザーが意図せず選択したままになるのを防ぐなら解除すべき。
-                    // ただし単純なdisplay:noneだけにしておく（要望範囲）。
                 }
             } else if (visitCount === '2回目以降') {
                 if (whiteningTitle) {
@@ -1358,6 +1382,54 @@
                     stayBtn.style.display = 'inline-block';
                 }
             }
+
+            // ▼妊婦さん向け・骨盤軸整体の初診/再診切り替えロジック
+            const maleFirst = document.querySelector('.male-first');
+            const maleRepeat = document.querySelector('.male-repeat');
+            const femaleFirst = document.querySelector('.female-first');
+            const femaleRepeat = document.querySelector('.female-repeat');
+
+            // info-textを更新
+            const maleInfoText = document.getElementById('male-info-text');
+            const femaleInfoText = document.getElementById('female-info-text');
+            if (maleInfoText) maleInfoText.textContent = '▼メニューをお選びください▼';
+            if (femaleInfoText) femaleInfoText.textContent = '▼メニューをお選びください▼';
+
+            if (visitCount === '1回目') {
+                // 初診メニューを表示、再診メニューを非表示
+                if (maleFirst) maleFirst.style.display = 'flex';
+                if (maleRepeat) maleRepeat.style.display = 'none';
+                if (femaleFirst) femaleFirst.style.display = 'flex';
+                if (femaleRepeat) femaleRepeat.style.display = 'none';
+            } else if (visitCount === '2回目以降') {
+                // 再診メニューを表示、初診メニューを非表示
+                if (maleFirst) maleFirst.style.display = 'none';
+                if (maleRepeat) maleRepeat.style.display = 'flex';
+                if (femaleFirst) femaleFirst.style.display = 'none';
+                if (femaleRepeat) femaleRepeat.style.display = 'flex';
+            }
+
+            // 来店回数切り替え時、選択済みメニューをリセット
+            document.querySelectorAll('.symptoms button.active').forEach(btn => btn.classList.remove('active'));
+            selectedSymptom = [];
+            selectedMenuTime = 0;
+            menuPrice = 0;
+            optionsPrice = 0;
+            totalAmount = 0;
+            const selectedMenusDisplay = document.getElementById('selected-menus-display');
+            if (selectedMenusDisplay) {
+                selectedMenusDisplay.innerHTML = '';
+                selectedMenusDisplay.style.display = 'none';
+            }
+            const treatmentText = document.getElementById('treatment-text');
+            if (treatmentText) {
+                treatmentText.innerHTML = '';
+                treatmentText.style.display = 'none';
+            }
+            checkDayTripVisibility();
+
+            // 表示を更新
+            updateDisplayInfo();
         }
 
         function showMenu(menu) {
@@ -1387,6 +1459,40 @@
 
             // 選択されたメニューセクションを表示
             document.getElementById(menu).classList.add('active');
+
+            // メニューカテゴリ切替時に、来店回数に応じた初診/再診サブメニューを表示
+            const maleFirst = document.querySelector('.male-first');
+            const maleRepeat = document.querySelector('.male-repeat');
+            const femaleFirst = document.querySelector('.female-first');
+            const femaleRepeat = document.querySelector('.female-repeat');
+
+            // 来店回数未選択時はメッセージを切り替え
+            const maleInfoText = document.getElementById('male-info-text');
+            const femaleInfoText = document.getElementById('female-info-text');
+
+            if (visitCount === '1回目') {
+                if (maleFirst) maleFirst.style.display = 'flex';
+                if (maleRepeat) maleRepeat.style.display = 'none';
+                if (femaleFirst) femaleFirst.style.display = 'flex';
+                if (femaleRepeat) femaleRepeat.style.display = 'none';
+                if (maleInfoText) maleInfoText.textContent = '▼メニューをお選びください▼';
+                if (femaleInfoText) femaleInfoText.textContent = '▼メニューをお選びください▼';
+            } else if (visitCount === '2回目以降') {
+                if (maleFirst) maleFirst.style.display = 'none';
+                if (maleRepeat) maleRepeat.style.display = 'flex';
+                if (femaleFirst) femaleFirst.style.display = 'none';
+                if (femaleRepeat) femaleRepeat.style.display = 'flex';
+                if (maleInfoText) maleInfoText.textContent = '▼メニューをお選びください▼';
+                if (femaleInfoText) femaleInfoText.textContent = '▼メニューをお選びください▼';
+            } else {
+                // 来店回数未選択時はサブメニューを非表示＋案内メッセージ
+                if (maleFirst) maleFirst.style.display = 'none';
+                if (maleRepeat) maleRepeat.style.display = 'none';
+                if (femaleFirst) femaleFirst.style.display = 'none';
+                if (femaleRepeat) femaleRepeat.style.display = 'none';
+                if (maleInfoText) maleInfoText.textContent = 'ご来店回数を選択してください';
+                if (femaleInfoText) femaleInfoText.textContent = 'ご来店回数を選択してください';
+            }
 
             // `treatment-text` の内容をリセット
             document.getElementById("treatment-text").innerHTML = "";
@@ -1508,13 +1614,15 @@
                 ? `,${formData.irradiationsCount}`
                 : '';
 
-            // ▼追加：日帰り用のテキスト生成
+            // ▼追加：産後ケア（日帰り・宿泊）用のテキスト生成
             let dayTripInfoText = '';
-            // 「日帰り（1日）」が含まれている場合のみテキストを追加
-            if (formData.selectedSymptom && formData.selectedSymptom.some(item => item.name === '日帰り（1日）')) {
+            const selectedDayTrip = formData.selectedSymptom && formData.selectedSymptom.find(item => item.name === '日帰り（1日）');
+            const selectedStay = formData.selectedSymptom && formData.selectedSymptom.find(item => item.name === '宿泊（１泊）');
+            if (selectedDayTrip || selectedStay) {
+                const careType = selectedDayTrip ? '日帰り' : '宿泊';
                 dayTripInfoText = `
 --------------------------------
-【日帰り詳細】
+【${careType}詳細】
 ご利用希望：${formData.dayTripPurpose || '未選択'}
 食事希望：${formData.dayTripMeal || '未選択'}
 ${formData.dayTripMeal === '昼食のみ' ? `利用終了時間：${formData.dayTripEndTime || '未入力'}\n` : ''}アレルギー：${formData.dayTripAllergy || 'なし'}
@@ -1646,8 +1754,8 @@ ${formData.dates[0]}
             // 現在の日時を取得
             const now = new Date();
 
-            // ▼追加：日帰り（1日）が選択されているかチェック
-            const isDayTripSelected = selectedSymptom && selectedSymptom.some(item => item.name === '日帰り（1日）');
+            // ▼追加：日帰り（1日）または宿泊（１泊）が選択されているかチェック
+            const isDayTripSelected = selectedSymptom && selectedSymptom.some(item => item.name === '日帰り（1日）' || item.name === '宿泊（１泊）');
 
             // テーブルの内容を更新
             for (let i = 0; i < 7; i++) {
