@@ -791,7 +791,15 @@
             style="display: none; background-color: #fffaf5; padding: 15px; border-radius: 8px; border: 1px dashed #b39779; margin-top: 20px;">
             <div style="text-align: center; font-weight: bold; color: #b39779; margin-bottom: 10px;">◆産後ケア 詳細入力◆</div>
 
-            <div class="label" style="margin-top: 10px;">主なご利用希望</div>
+            <div class="label" style="margin-top: 10px;">お住まいの市</div>
+            <input type="text" id="dayTripCity" placeholder="例：草津市">
+
+            <div class="label">出産日</div>
+            <select id="dayTripBirthDate" style="width:100%; padding:14px; margin-bottom:15px; border:1px solid #dccdc2; border-radius:8px; box-sizing:border-box; font-size:16px; background-color:#fdfdfd; color:#5a4e46; appearance:none; -webkit-appearance:none;">
+                <option value="">-- 選択してください --</option>
+            </select>
+
+            <div class="label">主なご利用希望</div>
             <div class="daytrip-buttons" id="dayTripPurposeButtons">
                 <button type="button" onclick="selectDayTripPurpose(this)">授乳相談</button>
                 <button type="button" onclick="selectDayTripPurpose(this)">乳房ケア</button>
@@ -949,6 +957,30 @@
 
             if (savedName) document.getElementById('name').value = savedName;
             if (savedPhone) document.getElementById('phone').value = savedPhone;
+
+            // 出産日セレクトボックスを動的生成（2025年4月〜2年後まで）
+            const birthDateSelect = document.getElementById('dayTripBirthDate');
+            const startYear = 2025;
+            const startMonth = 4; // 4月
+            const today = new Date();
+            const endYear = today.getFullYear() + 2;
+            const endMonth = 12;
+
+            for (let y = startYear; y <= endYear; y++) {
+                const mStart = (y === startYear) ? startMonth : 1;
+                const mEnd   = (y === endYear)   ? endMonth  : 12;
+                for (let m = mStart; m <= mEnd; m++) {
+                    // 各月の最終日まで日付を生成
+                    const daysInMonth = new Date(y, m, 0).getDate();
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const val = `${y}年${m}月${d}日`;
+                        const opt = document.createElement('option');
+                        opt.value = val;
+                        opt.textContent = val;
+                        birthDateSelect.appendChild(opt);
+                    }
+                }
+            }
         });
 
         // スムーズスクロール
@@ -1507,6 +1539,8 @@
             // 日帰りリセット
             dayTripPurpose = '';
             dayTripMeal = '';
+            document.getElementById('dayTripCity').value = '';
+            document.getElementById('dayTripBirthDate').value = '';
             document.getElementById('dayTripEndTime').value = '';
             document.getElementById('dayTripAllergy').value = '';
             document.getElementById('dayTripDislike').value = '';
@@ -1553,6 +1587,8 @@
             }
 
             // ▼追加：日帰り情報収集
+            const dayTripCity = document.getElementById('dayTripCity').value.trim();
+            const dayTripBirthDate = document.getElementById('dayTripBirthDate').value;
             const dayTripEndTime = document.getElementById('dayTripEndTime').value.trim();
             const dayTripAllergy = document.getElementById('dayTripAllergy').value.trim();
             const dayTripDislike = document.getElementById('dayTripDislike').value.trim();
@@ -1567,6 +1603,8 @@
                 dates: selectedFullDate ? [selectedFullDate] : null,
                 message: document.getElementById('message').value.trim(),
                 // 日帰り項目
+                dayTripCity: dayTripCity,
+                dayTripBirthDate: dayTripBirthDate,
                 dayTripPurpose: dayTripPurpose,
                 dayTripMeal: dayTripMeal,
                 dayTripEndTime: dayTripEndTime,
@@ -1623,6 +1661,8 @@
                 dayTripInfoText = `
 --------------------------------
 【${careType}詳細】
+お住まいの市：${formData.dayTripCity || '未入力'}
+出産日：${formData.dayTripBirthDate || '未選択'}
 ご利用希望：${formData.dayTripPurpose || '未選択'}
 食事希望：${formData.dayTripMeal || '未選択'}
 ${formData.dayTripMeal === '昼食のみ' ? `利用終了時間：${formData.dayTripEndTime || '未入力'}\n` : ''}アレルギー：${formData.dayTripAllergy || 'なし'}
