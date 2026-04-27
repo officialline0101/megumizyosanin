@@ -707,7 +707,7 @@
         <div class="menu-sections">
             <button type="button" onclick="showMenu('male')">妊婦さん向け</button>
             <button type="button" onclick="showMenu('female')">骨盤軸整体（産前・産後）</button>
-            <button type="button" onclick="showMenu('whitening')">産後ケア<br>（河内長野・富田林へ申請済みの方のみ）</button>
+            <button type="button" onclick="showMenu('whitening')">産後ケア<br>（市に申請済みの方）</button>
             <button type="button" onclick="showMenu('zyunyuu')">授乳相談・おっぱいケア</button>
         </div>
 
@@ -763,14 +763,14 @@
 
         <div id="whitening" class="menu-section">
             <div class="labeltyuuou">
-                <span class="highlight-text">◆産後ケア◆<br>（河内長野・富田林へ申請済みの方のみ）<br>2回目以降の方で宿泊希望の方は<br>別途お問い合わせください</span>
+                <span class="highlight-text">◆産後ケア◆<br>（市に申請済みの方）<br>2回目以降の方で既往がある方(特に治療中である場合)や<br>宿泊希望の方は別途お問合せ下さい</span>
             </div>
             <div class="info-text">▼メニューをお選びください▼</div>
             <div class="symptoms">
-                <button type="button" onclick="selectSymptom(this)" data-category="産後ケア（河内長野・富田林へ申請済みの方のみ）"
+                <button type="button" onclick="selectSymptom(this)" data-category="産後ケア（市に申請済みの方）"
                     data-price="0">日帰り（1日）</button>
                 <button type="button" id="stayMenuBtn" onclick="selectSymptom(this)"
-                    data-category="産後ケア（河内長野・富田林へ申請済みの方のみ）" data-price="0" style="display: none;">宿泊（１泊）</button>
+                    data-category="産後ケア（市に申請済みの方）" data-price="0" style="display: none;">宿泊（１泊）</button>
             </div>
         </div>
 
@@ -1369,14 +1369,14 @@
 
             if (visitCount === '1回目') {
                 if (whiteningTitle) {
-                    whiteningTitle.innerHTML = '◆産後ケア◆<br>（河内長野・富田林へ申請済みの方のみ）<br>宿泊希望の方は別途お問合せください。';
+                    whiteningTitle.innerHTML = '◆産後ケア◆<br>（市に申請済みの方）<br>既往がある方(特に治療中である場合)や宿泊希望の方は別途お問合せ下さい';
                 }
                 if (stayBtn) {
                     stayBtn.style.display = 'none';
                 }
             } else if (visitCount === '2回目以降') {
                 if (whiteningTitle) {
-                    whiteningTitle.innerHTML = '◆産後ケア◆<br>（河内長野・富田林へ申請済みの方のみ）';
+                    whiteningTitle.innerHTML = '◆産後ケア◆<br>（市に申請済みの方）';
                 }
                 if (stayBtn) {
                     stayBtn.style.display = 'inline-block';
