@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>予約フォーム</title>
+    <title>来院ケア予約フォーム</title>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         /* =========================================
@@ -683,17 +683,10 @@
 <body>
 
     <div class="container">
-        <h1>予約フォーム</h1>
-        <div class="info-texttop">
-            出張の方はこちら<br>
-            <a href="tel:09030506904">電話：090-3050-6904</a>
-        </div>
+        <h1>来院ケア予約フォーム</h1>
 
         <div class="label">お客様名<span class="required">必須</span></div>
         <input type="text" id="name" placeholder="お名前を入力してください" oninput="saveInput('name')">
-
-        <div class="label">電話番号<span class="required">必須</span></div>
-        <input type="tel" id="phone" placeholder="電話番号を入力してください" oninput="saveInput('phone')">
 
         <div class="label">ご来店回数<span class="required">必須</span></div>
         <div class="visit-buttons">
@@ -1674,7 +1667,6 @@ ${formData.dayTripMeal === '昼食のみ' ? `利用終了時間：${formData.day
                 type: 'text',
                 text: `【予約フォーム】
 お名前：${formData.name}
-電話番号：${formData.phone}
 ご来店回数：${formData.visitCount}
 コース：${formData.selectedMenu}
 メニュー：${selectedSymptomText}${irradiationsText}${dayTripInfoText}
