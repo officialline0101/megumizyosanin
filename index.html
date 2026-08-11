@@ -688,6 +688,9 @@
         <div class="label">お客様名<span class="required">必須</span></div>
         <input type="text" id="name" placeholder="お名前を入力してください" oninput="saveInput('name')">
 
+        <div class="label">電話番号<span class="required">必須</span></div>
+        <input type="tel" id="phone" placeholder="電話番号を入力してください" oninput="saveInput('phone')">
+
         <div class="label">ご来店回数<span class="required">必須</span></div>
         <div class="visit-buttons">
             <button type="button" id="firstVisit" onclick="selectVisit(this)">1回目</button>
@@ -993,6 +996,7 @@
 
         function updateDisplayInfo() {
             const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
             const visitCountText = visitCount ? `<span style="color:#5a4e46;"><strong>来店回数</strong></span>：${visitCount}` : '・来店回数が未選択です';
             const selectedMenuText = selectedMenu ? `<span style="color:#5a4e46;"><strong>コース</strong></span>：${selectedMenu}` : '・コースが未選択です';
 
@@ -1017,6 +1021,11 @@
         <div class="info-row">
             <p><span style="color:#5a4e46;"><strong>お名前</strong></span>：${name}</p>
             <button class="edit-button" onclick="scrollToElement('name')">修正</button>
+        </div>
+        <hr>
+        <div class="info-row">
+            <p><span style="color:#5a4e46;"><strong>電話番号</strong></span>：${phone}</p>
+            <button class="edit-button" onclick="scrollToElement('phone')">修正</button>
         </div>
         <hr>
         <div class="info-row">
@@ -1047,6 +1056,7 @@
 
         // 各ボタンや入力フィールドでupdateDisplayInfoを呼び出すようにする
         document.getElementById('name').addEventListener('input', updateDisplayInfo);
+        document.getElementById('phone').addEventListener('input', updateDisplayInfo);
         document.querySelectorAll('.visit-buttons button').forEach(button => {
             button.addEventListener('click', updateDisplayInfo);
         });
