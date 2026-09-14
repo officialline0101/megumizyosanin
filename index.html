@@ -104,6 +104,15 @@
             font-size: 1.1em;
         }
 
+        /* 日帰り 受付停止の注意書き */
+        .day-trip-notice {
+            color: #d9534f;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-align: center;
+            margin: 6px 0 10px;
+        }
+
         /* 必須マーク */
         .required {
             color: #fff;
@@ -765,6 +774,7 @@
             <div class="symptoms">
                 <button type="button" onclick="selectSymptom(this)" data-category="産後ケア（市に申請済みの方）"
                     data-price="0">日帰り（1日）</button>
+                <div class="day-trip-notice">※日帰り（1日）は令和8年10月1日～10月31日はご予約いただけません。</div>
                 <button type="button" id="stayMenuBtn" onclick="selectSymptom(this)"
                     data-category="産後ケア（市に申請済みの方）" data-price="0" style="display: none;">宿泊（１泊）</button>
             </div>
@@ -1799,6 +1809,12 @@ ${formData.dates[0]}
             // ▼追加：日帰り（1日）または宿泊（１泊）が選択されているかチェック
             const isDayTripSelected = selectedSymptom && selectedSymptom.some(item => item.name === '日帰り（1日）' || item.name === '宿泊（１泊）');
 
+            // ▼追加：日帰り（1日）のみ選択されているかチェック（令和8年10月の受付停止用）
+            const isDayTripOnlySelected = selectedSymptom && selectedSymptom.some(item => item.name === '日帰り（1日）');
+            // 日帰り（1日）の受付停止期間：令和8年10月1日～10月31日
+            const dayTripBlockStart = new Date(2026, 9, 1, 0, 0, 0, 0);   // 2026-10-01 00:00
+            const dayTripBlockEnd = new Date(2026, 10, 1, 0, 0, 0, 0);    // 2026-11-01 00:00（この時刻より前まで）
+
             // テーブルの内容を更新
             for (let i = 0; i < 7; i++) {
                 const day = new Date(currentDate);
@@ -1824,6 +1840,13 @@ ${formData.dates[0]}
                     if (isDayTripSelected) {
                         const hour = slotStart.getHours();
                         const minute = slotStart.getMinutes();
+
+                        // 条件0: 日帰り（1日）選択時は令和8年10月1日～10月31日を全て✕にする
+                        if (isDayTripOnlySelected && slotStart >= dayTripBlockStart && slotStart < dayTripBlockEnd) {
+                            cell.textContent = '✕';
+                            cell.classList.add('unavailable');
+                            continue;
+                        }
 
                         // 条件1: 09:00 ~ 09:59 を✕にする (9時台すべて)
                         if (hour === 9) {
