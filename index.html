@@ -759,7 +759,7 @@
 
         <div id="whitening" class="menu-section">
             <div class="labeltyuuou">
-                <span class="highlight-text">◆産後ケア◆<br>（市に申請済みの方）<br>2回目以降の方で既往がある方(特に治療中である場合)や<br>宿泊希望の方は別途お問合せ下さい</span>
+                <span class="highlight-text">◆産後ケア◆<br>既往がある方(特に治療中である場合)や<br>宿泊希望の方は別途お問合せ下さい</span>
             </div>
             <div class="info-text">▼メニューをお選びください▼</div>
             <div class="symptoms">
@@ -786,6 +786,18 @@
         <div id="dayTripOptions"
             style="display: none; background-color: #fffaf5; padding: 15px; border-radius: 8px; border: 1px dashed #b39779; margin-top: 20px;">
             <div style="text-align: center; font-weight: bold; color: #b39779; margin-bottom: 10px;">◆産後ケア 詳細入力◆</div>
+
+            <!-- ▼追加：1回目×日帰り（1日）選択時のみ表示する確認チェック -->
+            <div id="dayTripConfirmContainer" style="display: none; background-color: #fff; border: 1px solid #dccdc2; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                <div style="font-size: 15px; color: #5a4e46; line-height: 1.7;">
+                    ①住民票のある市町村に申請済みですか？<br>
+                    ②お住まいの市町村が当院を利用できるか確認しましたか？
+                </div>
+                <label for="dayTripConfirmCheck" style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-weight: bold; color: #5a4e46; cursor: pointer;">
+                    <input type="checkbox" id="dayTripConfirmCheck" style="width: 20px; height: 20px; margin: 0;">
+                    <span>上記、内容を確認しました<span class="required">必須</span></span>
+                </label>
+            </div>
 
             <div class="label" style="margin-top: 10px;">お住まいの市</div>
             <input type="text" id="dayTripCity" placeholder="例：草津市">
@@ -1105,6 +1117,17 @@
             } else {
                 container.style.display = 'none';
             }
+
+            // ▼追加：1回目×日帰り（1日）選択時のみ確認チェックを表示
+            const confirmContainer = document.getElementById('dayTripConfirmContainer');
+            const confirmCheck = document.getElementById('dayTripConfirmCheck');
+            const isFirstDayTrip = visitCount === '1回目' && selectedSymptom.some(item => item.name === '日帰り（1日）');
+            if (confirmContainer) {
+                confirmContainer.style.display = isFirstDayTrip ? 'block' : 'none';
+            }
+            if (!isFirstDayTrip && confirmCheck) {
+                confirmCheck.checked = false;
+            }
         }
 
         function selectDayTripPurpose(button) {
@@ -1404,7 +1427,7 @@
 
             if (visitCount === '1回目') {
                 if (whiteningTitle) {
-                    whiteningTitle.innerHTML = '◆産後ケア◆<br>（市に申請済みの方）<br>既往がある方(特に治療中である場合)や宿泊希望の方は別途お問合せ下さい';
+                    whiteningTitle.innerHTML = '◆産後ケア◆<br>既往がある方(特に治療中である場合)や<br>宿泊希望の方は別途お問合せ下さい';
                 }
                 if (stayBtn) {
                     stayBtn.style.display = 'none';
@@ -1547,6 +1570,7 @@
             document.getElementById('dayTripEndTime').value = '';
             document.getElementById('dayTripAllergy').value = '';
             document.getElementById('dayTripDislike').value = '';
+            document.getElementById('dayTripConfirmCheck').checked = false;
             // ボタンのアクティブ解除
             document.querySelectorAll('#dayTripPurposeButtons button, #dayTripMealButtons button').forEach(btn => btn.classList.remove('active'));
             checkDayTripVisibility();
@@ -1612,7 +1636,8 @@
                 dayTripMeal: dayTripMeal,
                 dayTripEndTime: dayTripEndTime,
                 dayTripAllergy: dayTripAllergy,
-                dayTripDislike: dayTripDislike
+                dayTripDislike: dayTripDislike,
+                dayTripConfirmed: document.getElementById('dayTripConfirmCheck').checked
             };
 
             // フォームデータのチェック
@@ -1633,6 +1658,14 @@
 
             if (!formData.dates) {
                 alert('希望日時を選択してください。');
+                return;
+            }
+
+            // ▼追加：1回目×日帰り（1日）の場合、確認チェックを必須にする
+            const isFirstDayTripSubmit = formData.visitCount === '1回目'
+                && formData.selectedSymptom.some(item => item.name === '日帰り（1日）');
+            if (isFirstDayTripSubmit && !formData.dayTripConfirmed) {
+                alert('「上記、内容を確認しました」にチェックを入れてください。');
                 return;
             }
 
@@ -1670,7 +1703,7 @@
 食事希望：${formData.dayTripMeal || '未選択'}
 ${formData.dayTripMeal === '昼食のみ' ? `利用終了時間：${formData.dayTripEndTime || '未入力'}\n` : ''}アレルギー：${formData.dayTripAllergy || 'なし'}
 苦手なもの：${formData.dayTripDislike || 'なし'}
---------------------------------`;
+${formData.dayTripConfirmed ? '申請・利用可否の確認：確認済み\n' : ''}--------------------------------`;
             }
 
             liff.sendMessages([{
