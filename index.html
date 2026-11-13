@@ -1832,11 +1832,11 @@ ${formData.dates[0]}
             // ▼追加：日帰り（1日）または宿泊（１泊）が選択されているかチェック
             const isDayTripSelected = selectedSymptom && selectedSymptom.some(item => item.name === '日帰り（1日）' || item.name === '宿泊（１泊）');
 
-            // ▼追加：日帰り（1日）のみ選択されているかチェック（令和8年10月の受付停止用）
+            // ▼追加：日帰り（1日）のみ選択されているかチェック（令和9年2月の受付停止用）
             const isDayTripOnlySelected = selectedSymptom && selectedSymptom.some(item => item.name === '日帰り（1日）');
-            // 日帰り（1日）の受付停止期間：令和8年10月1日～10月31日
-            const dayTripBlockStart = new Date(2026, 9, 1, 0, 0, 0, 0);   // 2026-10-01 00:00
-            const dayTripBlockEnd = new Date(2026, 10, 1, 0, 0, 0, 0);    // 2026-11-01 00:00（この時刻より前まで）
+            // 日帰り（1日）の受付停止期間：令和9年2月1日～2月28日
+            const dayTripBlockStart = new Date(2027, 1, 1, 0, 0, 0, 0);   // 2027-02-01 00:00
+            const dayTripBlockEnd = new Date(2027, 2, 1, 0, 0, 0, 0);     // 2027-03-01 00:00（この時刻より前まで）
 
             // テーブルの内容を更新
             for (let i = 0; i < 7; i++) {
@@ -1864,7 +1864,7 @@ ${formData.dates[0]}
                         const hour = slotStart.getHours();
                         const minute = slotStart.getMinutes();
 
-                        // 条件0: 日帰り（1日）選択時は令和8年10月1日～10月31日を全て✕にする
+                        // 条件0: 日帰り（1日）選択時は令和9年2月1日～2月28日を全て✕にする
                         if (isDayTripOnlySelected && slotStart >= dayTripBlockStart && slotStart < dayTripBlockEnd) {
                             cell.textContent = '✕';
                             cell.classList.add('unavailable');
